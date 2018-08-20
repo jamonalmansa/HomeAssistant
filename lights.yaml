@@ -1,0 +1,54 @@
+ 
+light: 
+
+#----------------------------------------------------------------
+# This is the correct setup of a RGB led strip
+# Tested with Tamosta +6.1 & HA +0.73
+# Wemos with 4 Relay board & WS2812B 12 Led Ring
+# POWER1 to POWER4 is for relay outputs, POWER5 is for Led Ring
+#
+#-- Example MQTT: 
+# stat/wemos-4relay/RESULT = {"POWER5":"ON","Dimmer":100,"Color":"FF4848","HSBColor":"0,72,100","Channel":[100,28,28]}
+#-----------------------------------------------------------------
+ - platform: mqtt
+      name: "Wemos RingLed"
+      retain: true
+      state_topic: "stat/wemos-4relay/RESULT"
+      value_template: '{{ value_json["POWER5"] }}'
+      command_topic: "cmnd/wemos-4relay/POWER5"
+      availability_topic: "tele/wemos-4relay/LWT"
+      qos: 1
+      payload_on: "ON"
+      payload_off: "OFF"
+      payload_available: "Online"
+      payload_not_available: "Offline"
+      optimistic: false
+      
+      brightness_state_topic: "stat/wemos-4relay/RESULT"
+      brightness_command_topic: "cmnd/wemos-4relay/Dimmer"
+      brightness_value_template: "{{ value_json.Dimmer }}"
+      brightness_scale: 100
+      
+      rgb_state_topic: "stat/wemos-4relay/RESULT"
+      rgb_value_template: "{{ value_json.Color[0:2] | int(base=16) }},{{ value_json.Color[2:4] | int(base=16) }},{{ value_json.Color[4:6] | int(base=16) }}"
+      rgb_command_topic: "cmnd/wemos-4relay/Color"
+      rgb_command_mode: hex
+      rgb_command_template: "{{ '%02x%02x%02x' | format(red, green, blue) }}"
+      
+      effect_state_topic: "stat/wemos-4relay/RESULT"
+      effect_command_topic: "cmnd/wemos-4relay/Scheme"
+      effect_value_template: "{{ value_json.Scheme }}"
+      effect_list:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
